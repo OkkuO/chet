@@ -29,7 +29,7 @@ builder.Services.AddScoped<GunRepository, GunRepository>();
 
 var app = builder.Build();
 
-app.Run();
+//app.Run();
 
 
 var cts = new CancellationTokenSource();
@@ -137,9 +137,9 @@ async Task OnMessage(Message msg, UpdateType type)
                 await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> решил сыграть в русскую рулетку..", parseMode: ParseMode.Html);
         
                 await Task.Delay(500);
-                int result = random(0, 2);
+               
                 int points = random(1, 11);
-                if (result == 0) 
+                if (points == 0) 
                 {
                     
                     await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️", parseMode: ParseMode.Html);

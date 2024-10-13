@@ -15,34 +15,25 @@ namespace chet.Services
         }
         public async Task<List<Gun>> GetAllGuns() 
         {
-            return await _gunRepository.Get();
-            
+            return await _gunRepository.GetAll();
         }
+
+        public async void AddGun(int points, long UserId, DateTime dateTime) 
+        {
+            await _gunRepository.Add(points, UserId, dateTime);
+        }
+
+
+        public void DeleteAll() 
+        {
+            _gunRepository.DeleteAll();
+        }
+
 
         // public async Task<Gun> GetByFilter(Gun gun) 
         // {
         //     return await _gunRepository.Create(gun);
         // }
-
-        public async void Update(int id, int points, long UserId, DateTime dateTime)
-        {
-             await _gunRepository.Update(id, points, UserId, dateTime);
-        }
-
-        public async void UpdatePoints(long UserId, int points, DateTime dateTime)
-        {
-             await _gunRepository.UpdatePoints(UserId, points, dateTime);
-        }
-
-        public async void GetById(long UserId)
-        {
-             await _gunRepository.GetById(UserId);
-        }
-
-        public async void Add( int points, long UserId, DateTime dateTime)
-        {
-             await _gunRepository.Add( points, UserId, dateTime);
-        }
 
     }
 }

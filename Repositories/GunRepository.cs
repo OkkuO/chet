@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using chet.Data;
+
 using chet.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Telegram.Bot;
+using System.Threading.Tasks;
+
 
 namespace chet.Repositories
 {
@@ -13,54 +18,32 @@ namespace chet.Repositories
     {
         
         private readonly GunDbContext _dbContext;
+
     
         public GunRepository(GunDbContext dbContext)
         {
             _dbContext = dbContext;
         }
- 
         
-        public async Task<List<Gun>> Get () 
+        public async Task<List<Gun>> GetAll() 
         {
-            return await _dbContext.guns
-                .AsNoTracking()
-                .OrderBy(c => c.dateTime)
-                .ToListAsync();
+            var guns = await _dbContext.guns.ToListAsync();
+            System.Console.WriteLine(guns);
+            //.Select(s => s.ToGunDto());
+            return guns;
         }
-
-        public async Task<Gun?> GetById(long UserId) 
-        {
-            return await _dbContext.guns
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.UserId == UserId);
-        }
-
-        public async Task<List<Gun>> GetByFilter (long id) 
-        {
-            var qvery = _dbContext.guns.AsNoTracking();
-
-            if(id > 0)
-            {
-                qvery = qvery.Where(c => c.Id > id);
-            }
-
-            return await qvery.ToListAsync();
-        }
-
-        public async Task<List<Gun>> GetByPage (int page, int pageSize) 
-        {
-            return await _dbContext.guns
-                .AsNoTracking()
-                .Skip((page - 1)*pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-        }
-
+        
+        // public async Task<IActionResult> Create(CreateGunRequestDto gunDto)
+        // { 
+        //     var gunModel = gunDto.ToGunFromCreateDto();
+        //     _dbContext.guns.Add(gunModel);
+        //     _dbContext.SaveChanges();
+        //     return CreatedAtAction(nameof(GetById), new {id=gunModel.Id}, gunModel.ToGunDto());
+        // }
         public async Task Add( int points, long UserId, DateTime dateTime)
         {
             var gun = new Gun()
             {   
-                // Id = id,
                 points = points,
                 UserId = UserId,
                 dateTime = dateTime
@@ -70,26 +53,11 @@ namespace chet.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task Update(int id, int points, long UserId, DateTime dateTime)
+         public async void DeleteAll()
         {
-            var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.Id == id)
-                ?? throw new Exception();
-            
-            gun.points = points;
-            gun.UserId = UserId;
-            gun.dateTime = dateTime;
-
+            var gunModel = await _dbContext.guns.ToListAsync();
+            _dbContext.guns.RemoveRange(gunModel);
             await _dbContext.SaveChangesAsync();
-        }
-
-        
-        public async Task UpdatePoints(long UserId, int points, DateTime dateTime)
-        {
-            var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId)
-                ?? throw new Exception();
-
-            gun.points += points;
-            gun.dateTime = dateTime;
         }
     }
 }

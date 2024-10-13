@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "9/ZykVqUhVs=",
+  "dgSpecHash": "2AfH9AN0Dtg=",
   "success": true,
   "projectFilePath": "D:\\projects\\chet\\chet.csproj",
   "expectedPackageFiles": [
@@ -40,6 +40,7 @@
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\mono.texttemplating\\2.2.1\\mono.texttemplating.2.2.1.nupkg.sha512",
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\nettelegrambot.framework\\3.0.0-rc9\\nettelegrambot.framework.3.0.0-rc9.nupkg.sha512",
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\nettelegrambotapi\\5.4.0\\nettelegrambotapi.5.4.0.nupkg.sha512",
+    "C:\\Users\\Sleepeatnes\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\npgsql\\8.0.4\\npgsql.8.0.4.nupkg.sha512",
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\npgsql.entityframeworkcore.postgresql\\8.0.8\\npgsql.entityframeworkcore.postgresql.8.0.8.nupkg.sha512",
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\recurrenttasks\\7.0.1\\recurrenttasks.7.0.1.nupkg.sha512",

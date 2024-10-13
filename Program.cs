@@ -1,9 +1,11 @@
-﻿using chet.Data;
+﻿
+using chet.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 using Telegram.Bot;
 using Telegram.Bot.Polling;
@@ -38,7 +40,7 @@ var app = builder.Build();
 
 var cts = new CancellationTokenSource();
 
-
+GunService commands = app.Services.GetService<GunService>();
 
 var bot = new TelegramBotClient("7671323724:AAEUlMgFmiZ3q9LpBSD50oNFTmWmQix_JZw", cancellationToken: cts.Token); //, 
 
@@ -47,12 +49,11 @@ bot.OnError += OnError;
 
 async Task OnError(Exception exception, HandleErrorSource source)
 {
-
     await bot.SendTextMessageAsync(exception.Message, "Error");
     Console.WriteLine(exception); // just dump the exception to the console
 }
 
-bot.OnMessage += OnMessage;
+
 // Получаем сообщение от пользователя
 
 int random (int a, int b) {
@@ -60,144 +61,146 @@ int random (int a, int b) {
     return rnd.Next(a, b);
 }
 
-// method that handle messages received by the bot:
+
+bot.OnMessage += OnMessage;
 async Task OnMessage(Message msg, UpdateType type)
 {
-     int idGun = 0;
-    
     Console.WriteLine($"{msg.From} | {msg.Text}"); 
+    if(msg?.Text != null) {
+        string[] commandParams = msg.Text.Split(' ');
+        int sumMess = random(0, 100);
 
-    
-    var commands = app.Services.GetService<GunService>();
-    
-    if(msg?.Text != null) 
-    {
-        
-        var commandParams = msg.Text.Split(' ');
-          
-        int sumMess = random(0, 1);
+        if (msg.From.Id!=1830105695 && msg.From.Id!=6417034191 && msg.From.Id!=7301559119) {
 
-        switch(sumMess)
-        {
-            case 10: 
-            {
-             int result = random(0, 120);
-            //для отправки стикера
-            var stickerId = await bot.GetStickerSetAsync("NegevBestGirl_by_fStikBot");
-        
-            await bot.SendStickerAsync(msg.Chat.Id, stickerId.Stickers[result].FileId);
-            sumMess = 0;
-            break;
-            }
-
-            case 20: 
-            {
-                //для отправки эмодзи на сообщение
-                if (msg.Type == MessageType.Text)
+       
+        try {
+            switch(sumMess) {
+                case 1: 
                 {
+                    int result = random(0, 120);
+                    //для отправки стикера
+                    var stickerId = await bot.GetStickerSetAsync("NegevBestGirl_by_fStikBot");
                 
-                await bot.SetMessageReactionAsync(msg.Chat.Id,
-                msg.MessageId,
-                reaction: ["🍓"]
-                );
+                    await bot.SendStickerAsync(msg.Chat.Id, stickerId.Stickers[result].FileId);
+                    sumMess = 0;
+                    break;
                 }
-                break;
-            }
-
-            default: 
-            //System.Console.WriteLine(sumMess);
-            break;
-        }
-
-
- 
-        switch (commandParams[0])
-        {   
-            case "/random": 
-            {
-                int a = int.Parse(commandParams[1]);
-                int b = int.Parse(commandParams[2]);
-                await bot.SendTextMessageAsync(msg.Chat, $"Рандом число: {random(a, b)}");
-                break;
-            }
-
-
-            case "/convert":
-            {
-                if(commandParams[2]=="km") 
+                case 2: 
                 {
-                    double result = Math.Round(int.Parse(commandParams[1]) * 0.62137);
-                    await bot.SendTextMessageAsync(msg.Chat, $"{commandParams[1]} km = {result} mi");
+                    //для отправки эмодзи на сообщение
+                    await bot.SetMessageReactionAsync(msg.Chat.Id, msg.MessageId, reaction: ["🎃"]);
+                    break;
                 }
-                else 
+                case 3: 
                 {
-                    await bot.SendTextMessageAsync(msg.Chat, $"Я пока недостаточно умный, чтобы вычесть это((((");
+                    await bot.SetMessageReactionAsync(msg.Chat.Id, msg.MessageId, reaction: ["👻"]);
+                    break;
                 }
 
+                default: 
+                //System.Console.WriteLine(sumMess);
                 break;
             }
-            case "/sb":
-            {
-                if(msg?.ReplyToMessage!=null) {
-                await bot.SendTextMessageAsync(msg.Chat.Id, 
-                    "🍓",
-                    replyParameters:msg.ReplyToMessage.MessageId
-                    );
 
-                await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
+            switch (commandParams[0]) {   
+                case "/random": 
+                {
+                    int a = int.Parse(commandParams[1]);
+                    int b = int.Parse(commandParams[2]);
+                    await bot.SendTextMessageAsync(msg.Chat, $"Рандом число: {random(a, b)}");
+                    break;
                 }
-                break;        
-            }
+                case "/convert":
+                {
+                    if(commandParams[2]=="km") 
+                    {
+                        double result = Math.Round(int.Parse(commandParams[1]) * 0.62137);
+                        await bot.SendTextMessageAsync(msg.Chat, $"{commandParams[1]} km = {result} mi");
+                    }
+                    else 
+                    {
+                        await bot.SendTextMessageAsync(msg.Chat, $"Я пока недостаточно умный, чтобы вычесть это((((");
+                    }
 
-            case "/eblan":
-            {
-                if(msg?.ReplyToMessage!=null) {
-                int result = random(0, 40);
-                            //для отправки стикера
-                var stickerId = await bot.GetStickerSetAsync("decommunization");
-
-            await bot.SendStickerAsync(msg.Chat.Id, 
-                    stickerId.Stickers[result].FileId,
-                    replyParameters:msg.ReplyToMessage.MessageId
-                    );
+                    break;
                 }
-                await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
-                break;
-            } 
+                case "/sb":
+                {
+                    if(msg?.ReplyToMessage!=null) {
+                    await bot.SendTextMessageAsync(msg.Chat.Id, 
+                        "🍓",
+                        replyParameters:msg.ReplyToMessage.MessageId
+                        );
+
+                    await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
+                    }
+                    break;        
+                }
+                case "/eblan":
+                {
+                    if(msg?.ReplyToMessage!=null) {
+                    int result = random(0, 40);
+                                //для отправки стикера
+                    var stickerId = await bot.GetStickerSetAsync("decommunization");
+
+                await bot.SendStickerAsync(msg.Chat.Id, 
+                        stickerId.Stickers[result].FileId,
+                        replyParameters:msg.ReplyToMessage.MessageId
+                        );
+                    }
+                    await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
+                    break;
+                }            
+                case "/gun":
+                {
+                    
+                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> решил сыграть в русскую рулетку..", parseMode: ParseMode.Html);
             
-            case "/gun":
-            {
-                await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> решил сыграть в русскую рулетку..", parseMode: ParseMode.Html);
-        
-                await Task.Delay(500);
+                    await Task.Delay(500);
 
-                int result = random(0, 1);
-                int points = random(1, 11);
-                if (result == 1) 
-                {       
+                    int result = random(0, 2);
+                    int points = random(1, 11);
+                    if (result == 0) 
+                    {       
+                                            
+                        commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
+                        await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️ Очки не получены. Попробуйте через 24 часа!", parseMode: ParseMode.Html);
+                    } else 
+                    {   
+                        commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
+                        await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", parseMode: ParseMode.Html);             
+                    }
                     
-                    
-                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️ Получено 0 очков!", parseMode: ParseMode.Html);
-                } else 
-                {   
-                   
-                   //commands?.Add( points, msg.From.Id, DateTime.Now);
-                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", parseMode: ParseMode.Html);             
+
+                    break;
                 }
-                //idGun++;
-
-                break;
+                case "/select":
+                {                    
+                    var result = "";
+                    commands?.GetAllGuns().Result.ForEach(g => result += JsonConvert.SerializeObject(g));
+                    await bot.SendTextMessageAsync(msg.Chat, $" {result}");
+                   
+                    break;
+                }
+                case "/delete":
+                {
+                    commands?.DeleteAll();
+                    
+                    break;
+                }
             }
-            case "/select":
-            {
-                
-               // string jsonString = JsonSerializer.Serialize(commands?.GetAllGuns());
-                //await bot.SendTextMessageAsync(msg.Chat,$"{jsonString}" );
-                break;
-            }
+        }
+        catch (Exception ex) {
+            Console.WriteLine(ex.Message);
+        }
         }
     }
-
 }
+
+// catch (DivideByZeroException)
+// {
+//     Console.WriteLine("Возникло исключение DivideByZeroException");
+// }
+
 
 Console.ReadLine();

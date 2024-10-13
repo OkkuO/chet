@@ -14,7 +14,8 @@
           "Microsoft.Extensions.Identity.Core": "8.0.10",
           "NetTelegramBot.Framework": "3.0.0-rc9",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.8",
-          "Telegram.Bot": "21.11.0"
+          "Telegram.Bot": "21.11.0",
+          "Telegram.BotAPI": "7.10.0"
         },
         "runtime": {
           "chet.dll": {}
@@ -670,6 +671,17 @@
             "fileVersion": "21.11.0.0"
           }
         }
+      },
+      "Telegram.BotAPI/7.10.0": {
+        "dependencies": {
+          "System.Text.Json": "8.0.4"
+        },
+        "runtime": {
+          "lib/netstandard2.0/Telegram.BotAPI.dll": {
+            "assemblyVersion": "7.10.0.0",
+            "fileVersion": "7.10.0.0"
+          }
+        }
       }
     }
   },
@@ -1070,6 +1082,13 @@
       "sha512": "sha512-Oa7Jo2dvSYYUMLL0CT8mTSyAtII2Vnn6F+t7N1Wm4XJYgZ1NIbbNeo3EjhM6CBUONUMBpu8fyDpJM8dqdmPedw==",
       "path": "telegram.bot/21.11.0",
       "hashPath": "telegram.bot.21.11.0.nupkg.sha512"
+    },
+    "Telegram.BotAPI/7.10.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WTQxcbK6HRO7aJ/vr9YjQCGWCDTBB4nHDRSyzgEWQC2i+QQGQU1RYVhiw6NUum8qpXyPqWesf3WyjIKgYQBCSw==",
+      "path": "telegram.botapi/7.10.0",
+      "hashPath": "telegram.botapi.7.10.0.nupkg.sha512"
     }
   }
 }

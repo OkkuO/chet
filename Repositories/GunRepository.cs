@@ -28,11 +28,11 @@ namespace chet.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Gun?> GetById(int id) 
+        public async Task<Gun?> GetById(long UserId) 
         {
             return await _dbContext.guns
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Id == id);
+                .FirstOrDefaultAsync(c => c.UserId == UserId);
         }
 
         public async Task<List<Gun>> GetByFilter (long id) 
@@ -56,11 +56,11 @@ namespace chet.Repositories
                 .ToListAsync();
         }
 
-        public async Task Add(int id, int points, long UserId, DateTime dateTime)
+        public async Task Add( int points, long UserId, DateTime dateTime)
         {
             var gun = new Gun()
             {   
-                Id = id,
+                // Id = id,
                 points = points,
                 UserId = UserId,
                 dateTime = dateTime
@@ -80,6 +80,16 @@ namespace chet.Repositories
             gun.dateTime = dateTime;
 
             await _dbContext.SaveChangesAsync();
+        }
+
+        
+        public async Task UpdatePoints(long UserId, int points, DateTime dateTime)
+        {
+            var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId)
+                ?? throw new Exception();
+
+            gun.points += points;
+            gun.dateTime = dateTime;
         }
     }
 }

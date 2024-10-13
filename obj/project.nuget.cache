@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "FCkIu+bI9uE=",
+  "dgSpecHash": "9/ZykVqUhVs=",
   "success": true,
   "projectFilePath": "D:\\projects\\chet\\chet.csproj",
   "expectedPackageFiles": [
@@ -59,7 +59,8 @@
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\system.text.encodings.web\\8.0.0\\system.text.encodings.web.8.0.0.nupkg.sha512",
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\system.text.json\\8.0.4\\system.text.json.8.0.4.nupkg.sha512",
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\system.threading.channels\\6.0.0\\system.threading.channels.6.0.0.nupkg.sha512",
-    "C:\\Users\\Sleepeatnes\\.nuget\\packages\\telegram.bot\\21.11.0\\telegram.bot.21.11.0.nupkg.sha512"
+    "C:\\Users\\Sleepeatnes\\.nuget\\packages\\telegram.bot\\21.11.0\\telegram.bot.21.11.0.nupkg.sha512",
+    "C:\\Users\\Sleepeatnes\\.nuget\\packages\\telegram.botapi\\7.10.0\\telegram.botapi.7.10.0.nupkg.sha512"
   ],
   "logs": []
 }

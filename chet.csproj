@@ -21,6 +21,7 @@
     <PackageReference Include="NetTelegramBot.Framework" Version="3.0.0-rc9" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
     <PackageReference Include="Telegram.Bot" Version="21.11.0" />
+    <PackageReference Include="Telegram.BotAPI" Version="7.10.0" />
   </ItemGroup>
 
 </Project>

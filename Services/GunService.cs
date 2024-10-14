@@ -23,9 +23,22 @@ namespace chet.Services
             return await _gunRepository.GetId(UserId);
         }
 
+
         public async void AddGun(int points, long UserId, DateTime dateTime) 
         {
             await _gunRepository.Add(points, UserId, dateTime);
+        }
+
+        
+        public async void UpdatePoints(long UserId, int points) 
+        {
+            await _gunRepository.UpdatePoints(UserId, points);
+        }
+        
+
+        public async void UpdateData(long UserId, DateTime dateTime) 
+        {
+            await _gunRepository.UpdateData(UserId, dateTime);
         }
 
         public void DeleteAll() 

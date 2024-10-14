@@ -163,24 +163,33 @@ async Task OnMessage(Message msg, UpdateType type)
                     
                          
                     //смотрим есть ли у меня такой ид в бд
-                    var UserId = "";
-                    UserId += JsonConvert.SerializeObject(commands?.GetUserId(msg.From.Id).Result); 
-                    System.Console.WriteLine($" {UserId}");
-                    
+                    Gun UserData = commands?.GetUserId(msg.From.Id).Result;
 
                     switch (result) 
                     {
                         case 0: 
                         {
-                            if (UserId == "null") 
+                            if (UserData! == null)
                             {
-                                commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
-                                await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️", 
-                                parseMode: ParseMode.Html);
+                                if (UserData?.points > 1) 
+                                {
+                                    if (UserData?.dateTime.AddHours(12) >= DateTime.Now) 
+                                    commands?.AddGun(1,msg.From.Id, DateTime.UtcNow);
+                                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️ Получено очко в знак утешения!", 
+                                    parseMode: ParseMode.Html);
+                                }
+                                else 
+                                {
+                                    //если игрок первый раз пишет команду
+                                    commands?.AddGun(1,msg.From.Id, DateTime.UtcNow);
+                                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️ Получено очко в знак утешения!", 
+                                    parseMode: ParseMode.Html); 
+                                }
                             }
                             else 
                             {
-                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже играли в русскую рулетку сегодня! Попробуйте через 24 часа!",
+                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже играли в русскую рулетку!" +
+                                $" Попробуйте через {UserData?.dateTime.AddHours(16).Subtract(DateTime.Now).Hours} часов!",
                                 parseMode: ParseMode.Html);
                             }
 
@@ -188,17 +197,31 @@ async Task OnMessage(Message msg, UpdateType type)
                         }
                         case 1: 
                         {
-                            if (UserId == "null") 
+                            if (UserData! == null) 
                             {
-                                commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
-                                await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", 
-                                parseMode: ParseMode.Html);  
-                           
+                                //если игрок ранее играл
+                                if (UserData?.points > 1) 
+                                {
+                                    if (UserData?.dateTime.AddHours(12) >= DateTime.Now)
+                                    commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
+                                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", 
+                                    parseMode: ParseMode.Html);  
+                                    commands?.UpdatePoints(msg.From.Id, points);
+                                    commands?.UpdateData(msg.From.Id, UserData.dateTime);
+
+                                } else 
+                                {
+                                    //если игрок первый раз пишет команду
+                                    commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
+                                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", 
+                                    parseMode: ParseMode.Html);  
+                                }
                             }
                             else
                             {
 
-                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже играли в русскую рулетку сегодня! Попробуйте через 24 часа!",
+                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже играли в русскую рулетку!" +
+                                $" Попробуйте через {UserData?.dateTime.AddHours(16).Subtract(DateTime.Now).Hours} часов!",
                                 parseMode: ParseMode.Html);
                             }
                             break;

@@ -36,6 +36,8 @@ namespace chet.Repositories
         {
             return await _dbContext.guns.AsNoTracking().FirstOrDefaultAsync(c => c.UserId == UserId);
         }
+
+
         
         public async Task Add( int points, long UserId, DateTime dateTime)
         {
@@ -48,6 +50,22 @@ namespace chet.Repositories
 
             await _dbContext.AddAsync(gun);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdatePoints(long UserId, int points)
+        {
+            var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId)
+                ?? throw new Exception();
+
+            gun.points += points;
+        }
+
+        public async Task UpdateData(long UserId, DateTime dateTime)
+        {
+            var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId)
+                ?? throw new Exception();
+
+            gun.dateTime = DateTime.UtcNow;
         }
 
          public async void DeleteAll()

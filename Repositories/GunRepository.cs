@@ -28,18 +28,15 @@ namespace chet.Repositories
         public async Task<List<Gun>> GetAll() 
         {
             var guns = await _dbContext.guns.ToListAsync();
-            System.Console.WriteLine(guns);
-            //.Select(s => s.ToGunDto());
+           
             return guns;
         }
+
+          public async Task<Gun> GetId(long UserId) 
+        {
+            return await _dbContext.guns.AsNoTracking().FirstOrDefaultAsync(c => c.UserId == UserId);
+        }
         
-        // public async Task<IActionResult> Create(CreateGunRequestDto gunDto)
-        // { 
-        //     var gunModel = gunDto.ToGunFromCreateDto();
-        //     _dbContext.guns.Add(gunModel);
-        //     _dbContext.SaveChanges();
-        //     return CreatedAtAction(nameof(GetById), new {id=gunModel.Id}, gunModel.ToGunDto());
-        // }
         public async Task Add( int points, long UserId, DateTime dateTime)
         {
             var gun = new Gun()

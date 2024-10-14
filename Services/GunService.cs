@@ -18,11 +18,15 @@ namespace chet.Services
             return await _gunRepository.GetAll();
         }
 
+        public async Task<Gun> GetUserId(long UserId) 
+        {
+            return await _gunRepository.GetId(UserId);
+        }
+
         public async void AddGun(int points, long UserId, DateTime dateTime) 
         {
             await _gunRepository.Add(points, UserId, dateTime);
         }
-
 
         public void DeleteAll() 
         {

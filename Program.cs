@@ -68,7 +68,7 @@ async Task OnMessage(Message msg, UpdateType type)
     Console.WriteLine($"{msg.From} | {msg.Text}"); 
     if(msg?.Text != null) {
         string[] commandParams = msg.Text.Split(' ');
-        int sumMess = random(0, 100);
+        int sumMess = random(0, 200);
 
         if (msg.From.Id!=1830105695 && msg.From.Id!=6417034191 && msg.From.Id!=7301559119) {
 
@@ -154,38 +154,82 @@ async Task OnMessage(Message msg, UpdateType type)
                 case "/gun":
                 {
                     
-                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> решил сыграть в русскую рулетку..", parseMode: ParseMode.Html);
+                   // await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> решил сыграть в русскую рулетку..", parseMode: ParseMode.Html);
             
                     await Task.Delay(500);
 
                     int result = random(0, 2);
                     int points = random(1, 11);
-                    if (result == 0) 
-                    {       
-                                            
-                        commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
-                        await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️ Очки не получены. Попробуйте через 24 часа!", parseMode: ParseMode.Html);
-                    } else 
-                    {   
-                        commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
-                        await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", parseMode: ParseMode.Html);             
-                    }
+                    
+                         
+                    //смотрим есть ли у меня такой ид в бд
+                    var UserId = "";
+                    UserId += JsonConvert.SerializeObject(commands?.GetUserId(msg.From.Id).Result); 
+                    System.Console.WriteLine($" {UserId}");
                     
 
+                    switch (result) 
+                    {
+                        case 0: 
+                        {
+                            if (UserId == "null") 
+                            {
+                                commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
+                                await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️", 
+                                parseMode: ParseMode.Html);
+                            }
+                            else 
+                            {
+                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже играли в русскую рулетку сегодня! Попробуйте через 24 часа!",
+                                parseMode: ParseMode.Html);
+                            }
+
+                            break;
+                        }
+                        case 1: 
+                        {
+                            if (UserId == "null") 
+                            {
+                                commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
+                                await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", 
+                                parseMode: ParseMode.Html);  
+                           
+                            }
+                            else
+                            {
+
+                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже играли в русскую рулетку сегодня! Попробуйте через 24 часа!",
+                                parseMode: ParseMode.Html);
+                            }
+                            break;
+                        }
+                    }
                     break;
                 }
                 case "/select":
-                {                    
-                    var result = "";
-                    commands?.GetAllGuns().Result.ForEach(g => result += JsonConvert.SerializeObject(g));
-                    await bot.SendTextMessageAsync(msg.Chat, $" {result}");
-                   
+                {          
+                    if (msg.From.Id == 7186499641) 
+                    {
+                        var result = "";
+                        commands?.GetAllGuns().Result.ForEach(g => result += JsonConvert.SerializeObject(g));
+                        await bot.SendTextMessageAsync(msg.Chat, $" {result}");
+                    } else 
+                    { 
+                        await bot.SendTextMessageAsync(msg.Chat, "У вас нет права использовать эту команду!");
+                    }          
+                    
                     break;
                 }
                 case "/delete":
                 {
-                    commands?.DeleteAll();
-                    
+                    if (msg.From.Id == 7186499641) 
+                    {
+                        commands?.DeleteAll();
+                    }
+                    else
+                    {
+                        await bot.SendTextMessageAsync(msg.Chat, "У вас нет права использовать эту команду!");
+                    }
                     break;
                 }
             }

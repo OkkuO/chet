@@ -26,6 +26,7 @@ namespace chet.Repositories
         }
         
         public async Task<List<Gun>> GetAll() 
+        
         {
             var guns = await _dbContext.guns.ToListAsync();
            
@@ -39,7 +40,7 @@ namespace chet.Repositories
 
 
         
-        public async Task Add( int points, long UserId, DateTime dateTime)
+        public async Task Add(int points, long UserId, DateTime dateTime)
         {
             var gun = new Gun()
             {   
@@ -52,20 +53,23 @@ namespace chet.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task UpdatePoints(long UserId, int points)
+        // public async Task UpdatePoints(long UserId, int points)
+        // {
+        //     var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId)
+        //         ?? throw new Exception("Пользователь не найден.");
+
+        //     gun.points += points;
+        //     await _dbContext.SaveChangesAsync(); 
+        // }
+
+        public async Task UpdateData(long UserId, DateTime dateTime, int points)
         {
             var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId)
-                ?? throw new Exception();
-
-            gun.points += points;
-        }
-
-        public async Task UpdateData(long UserId, DateTime dateTime)
-        {
-            var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId)
-                ?? throw new Exception();
+                ?? throw new Exception("Пользователь не найден.");
 
             gun.dateTime = DateTime.UtcNow;
+            gun.points += points;
+            await _dbContext.SaveChangesAsync(); 
         }
 
          public async void DeleteAll()

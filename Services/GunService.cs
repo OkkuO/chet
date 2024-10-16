@@ -30,15 +30,15 @@ namespace chet.Services
         }
 
         
-        public async void UpdatePoints(long UserId, int points) 
-        {
-            await _gunRepository.UpdatePoints(UserId, points);
-        }
+        // public async void UpdatePoints(long UserId, int points) 
+        // {
+        //     await _gunRepository.UpdatePoints(UserId, points);
+        // }
         
 
-        public async void UpdateData(long UserId, DateTime dateTime) 
+        public async void UpdateData(long UserId, DateTime dateTime, int points) 
         {
-            await _gunRepository.UpdateData(UserId, dateTime);
+            await _gunRepository.UpdateData(UserId, dateTime, points);
         }
 
         public void DeleteAll() 

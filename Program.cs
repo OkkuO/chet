@@ -42,7 +42,7 @@ var cts = new CancellationTokenSource();
 
 GunService commands = app.Services.GetService<GunService>();
 
-var bot = new TelegramBotClient("7671323724:AAEUlMgFmiZ3q9LpBSD50oNFTmWmQix_JZw", cancellationToken: cts.Token); //, 
+var bot = new TelegramBotClient("6843879941:AAHoQrRp8v0GPdcYIIonHdtemtK-RQEOUgg", cancellationToken: cts.Token); //, 
 
 var me = await bot.GetMeAsync();
 bot.OnError += OnError;
@@ -62,16 +62,27 @@ int random (int a, int b) {
 }
 
 
+
 bot.OnMessage += OnMessage;
 async Task OnMessage(Message msg, UpdateType type)
 {
     Console.WriteLine($"{msg.From} | {msg.Text}"); 
+
+    //смотрим есть ли у меня такой ид в бд
+    Gun UserData = commands.GetUserId(msg.From.Id).Result;
+   
+    //функция если пользователь уже делал выстрел
+    async void UserPlayed ()
+    {
+        await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже делали выстрел!" +
+            $" Попробуйте через {UserData?.dateTime.AddHours(1).Subtract(DateTime.UtcNow).Hours} часов!",
+            parseMode: ParseMode.Html);
+    }
+
+
     if(msg?.Text != null) {
         string[] commandParams = msg.Text.Split(' ');
         int sumMess = random(0, 200);
-
-        if (msg.From.Id!=1830105695 && msg.From.Id!=6417034191 && msg.From.Id!=7301559119) {
-
        
         try {
             switch(sumMess) {
@@ -102,7 +113,8 @@ async Task OnMessage(Message msg, UpdateType type)
                 break;
             }
 
-            switch (commandParams[0]) {   
+            switch (commandParams[0]) 
+            {   
                 case "/random": 
                 {
                     int a = int.Parse(commandParams[1]);
@@ -153,89 +165,92 @@ async Task OnMessage(Message msg, UpdateType type)
                 }            
                 case "/gun":
                 {
-                    
-                   // await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> решил сыграть в русскую рулетку..", parseMode: ParseMode.Html);
-            
-                    await Task.Delay(500);
-
-                    int result = random(0, 2);
-                    int points = random(1, 11);
-                    
-                         
-                    //смотрим есть ли у меня такой ид в бд
-                    Gun UserData = commands?.GetUserId(msg.From.Id).Result;
-
-                    switch (result) 
+                    //выстрел
+                    int gun = random(0, 2);        
+                    switch (gun) 
                     {
                         case 0: 
                         {
-                            if (UserData! == null)
+                            if (UserData!= null)
                             {
-                                if (UserData?.points > 1) 
-                                {
-                                    if (UserData?.dateTime.AddHours(12) >= DateTime.Now) 
-                                    commands?.AddGun(1,msg.From.Id, DateTime.UtcNow);
+                            System.Console.WriteLine($"Пользователь: {UserData.Id}");
+
+                                if (UserData?.dateTime.AddHours(1) < DateTime.UtcNow) 
+                                {                                        
                                     await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️ Получено очко в знак утешения!", 
                                     parseMode: ParseMode.Html);
+
+                                    commands?.UpdateData(msg.From.Id, UserData.dateTime, 1);
                                 }
                                 else 
                                 {
-                                    //если игрок первый раз пишет команду
-                                    commands?.AddGun(1,msg.From.Id, DateTime.UtcNow);
-                                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Застрелился ⚰️ Получено очко в знак утешения!", 
-                                    parseMode: ParseMode.Html); 
-                                }
-                            }
-                            else 
+                                    UserPlayed();
+                                }       
+                            } 
+                            else
                             {
-                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже играли в русскую рулетку!" +
-                                $" Попробуйте через {UserData?.dateTime.AddHours(16).Subtract(DateTime.Now).Hours} часов!",
-                                parseMode: ParseMode.Html);
-                            }
+                                //если игрок первый раз пишет команду
 
+                                    System.Console.WriteLine($"Пользователь: |{msg.From.Id}| {msg.From.FirstName}");
+
+                                await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>  Застрелился ⚰️ Получено очко в знак утешения!",
+                                parseMode: ParseMode.Html); 
+                                    System.Console.WriteLine(1);
+                                commands?.AddGun(1, msg.From.Id, DateTime.UtcNow);
+                                    System.Console.WriteLine(2);
+                            }
                             break;
                         }
                         case 1: 
                         {
-                            if (UserData! == null) 
+                            int points = random(2, 11);
+                            if (UserData!= null) 
                             {
-                                //если игрок ранее играл
-                                if (UserData?.points > 1) 
-                                {
-                                    if (UserData?.dateTime.AddHours(12) >= DateTime.Now)
-                                    commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
-                                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", 
-                                    parseMode: ParseMode.Html);  
-                                    commands?.UpdatePoints(msg.From.Id, points);
-                                    commands?.UpdateData(msg.From.Id, UserData.dateTime);
+                                System.Console.WriteLine($"Пользователь: {UserData.Id}");
 
-                                } else 
+                                if (UserData?.dateTime.AddHours(1) < DateTime.UtcNow) 
                                 {
-                                    //если игрок первый раз пишет команду
-                                    commands?.AddGun(points,msg.From.Id, DateTime.UtcNow);
-                                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!", 
+                                        System.Console.WriteLine(3);
+                                    await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> выжил! 😇 Получено {points} очков!"
+                                    + $"\n Всего очков: {UserData.points + points}", 
                                     parseMode: ParseMode.Html);  
+                                        System.Console.WriteLine(4);
+                                    commands?.UpdateData(msg.From.Id, UserData.dateTime, points);
+                                        System.Console.WriteLine(5);
                                 }
+                                else
+                                {
+                                    UserPlayed();
+                                }                                                                  
                             }
                             else
                             {
+                                    System.Console.WriteLine($"Пользователь: |{msg.From.Id}| {msg.From.FirstName}");
 
-                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>, вы уже играли в русскую рулетку!" +
-                                $" Попробуйте через {UserData?.dateTime.AddHours(16).Subtract(DateTime.Now).Hours} часов!",
-                                parseMode: ParseMode.Html);
+                                //если игрок первый раз пишет команду
+                                await bot.SendTextMessageAsync(msg.Chat, $" <a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a>  выжил! 😇 Получено {points} очков!", 
+                                parseMode: ParseMode.Html);    
+
+                                commands?.AddGun(points, msg.From.Id, DateTime.UtcNow); 
+                                    System.Console.WriteLine(6);                           
                             }
-                            break;
+                            break;          
                         }
                     }
-                    break;
+                await Task.Delay(2000);
+                await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
+                break;
                 }
+
                 case "/select":
                 {          
                     if (msg.From.Id == 7186499641) 
                     {
                         var result = "";
                         commands?.GetAllGuns().Result.ForEach(g => result += JsonConvert.SerializeObject(g));
+
                         await bot.SendTextMessageAsync(msg.Chat, $" {result}");
+                        await bot.SendTextMessageAsync(msg.Chat, $"{JsonConvert.SerializeObject(commands.GetUserId(msg.From.Id).Result)}");
                     } else 
                     { 
                         await bot.SendTextMessageAsync(msg.Chat, "У вас нет права использовать эту команду!");
@@ -258,16 +273,10 @@ async Task OnMessage(Message msg, UpdateType type)
             }
         }
         catch (Exception ex) {
-            Console.WriteLine(ex.Message);
+           // Console.WriteLine(ex.Message);
         }
-        }
+        
     }
 }
-
-// catch (DivideByZeroException)
-// {
-//     Console.WriteLine("Возникло исключение DivideByZeroException");
-// }
-
 
 Console.ReadLine();

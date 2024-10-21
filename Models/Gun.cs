@@ -11,5 +11,6 @@ namespace chet.Models
         public int points { get; set; }
         public long UserId { get; set; }
         public DateTime dateTime{ get; set; }
+        public string userName { get; set; } = "";
     }
 }

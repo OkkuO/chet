@@ -8,21 +8,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace chet.Data
 {
-    public class GunDbContext : DbContext
+    public class ChatsDbContext : DbContext
     {
-        public GunDbContext(DbContextOptions<GunDbContext> options)
+        public ChatsDbContext(DbContextOptions<ChatsDbContext> options)
             : base(options)
         {
                 
         }
+        public DbSet <Chats> chats{ get; set; }
 
-        public DbSet <Gun> guns{ get; set; }
-        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfiguration(new GunConfiguration());
+            modelBuilder.ApplyConfiguration(new ChatsConfiguration());
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        public static implicit operator ChatsDbContext(GunDbContext v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

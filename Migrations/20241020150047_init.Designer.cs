@@ -12,7 +12,7 @@ using chet.Data;
 namespace chet.Migrations
 {
     [DbContext(typeof(GunDbContext))]
-    [Migration("20241009111742_init")]
+    [Migration("20241020150047_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -24,6 +24,26 @@ namespace chet.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("chet.Models.Chats", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<long>("chatId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("msg")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("chats");
+                });
 
             modelBuilder.Entity("chet.Models.Gun", b =>
                 {
@@ -41,6 +61,10 @@ namespace chet.Migrations
 
                     b.Property<int>("points")
                         .HasColumnType("integer");
+
+                    b.Property<string>("userName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

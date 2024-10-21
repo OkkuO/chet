@@ -23,22 +23,21 @@ namespace chet.Services
             return await _gunRepository.GetId(UserId);
         }
 
-
-        public async void AddGun(int points, long UserId, DateTime dateTime) 
+        public async Task<List<Gun>> GetPagedData() 
         {
-            await _gunRepository.Add(points, UserId, dateTime);
+            return await _gunRepository.GetPagedData(1, 5);
         }
 
-        
-        // public async void UpdatePoints(long UserId, int points) 
-        // {
-        //     await _gunRepository.UpdatePoints(UserId, points);
-        // }
-        
-
-        public async void UpdateData(long UserId, DateTime dateTime, int points) 
+        public async void AddGun(int points, long UserId, DateTime dateTime, string userName) 
         {
-            await _gunRepository.UpdateData(UserId, dateTime, points);
+            await _gunRepository.Add(points, UserId, dateTime, userName);
+        }
+
+
+
+        public async void UpdateData(string userName, long UserId, DateTime dateTime, int points) 
+        {
+            await _gunRepository.UpdateData(userName, UserId, dateTime, points);
         }
 
         public void DeleteAll() 
@@ -46,11 +45,9 @@ namespace chet.Services
             _gunRepository.DeleteAll();
         }
 
-
-        // public async Task<Gun> GetByFilter(Gun gun) 
-        // {
-        //     return await _gunRepository.Create(gun);
-        // }
-
+        internal void GetAllChats()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

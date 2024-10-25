@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "2AfH9AN0Dtg=",
+  "dgSpecHash": "73s7I4+yjBA=",
   "success": true,
-  "projectFilePath": "D:\\projects\\chet\\chet.csproj",
+  "projectFilePath": "D:\\projects\\chet — копия\\chet.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Sleepeatnes\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\8.0.10\\microsoft.aspnetcore.cryptography.internal.8.0.10.nupkg.sha512",

@@ -23,11 +23,6 @@ namespace chet.Services
             return await _gunRepository.GetId(UserId);
         }
 
-        public async Task<List<Gun>> GetPagedData() 
-        {
-            return await _gunRepository.GetPagedData(1, 5);
-        }
-
         public async void AddGun(int points, long UserId, DateTime dateTime, string userName) 
         {
             await _gunRepository.Add(points, UserId, dateTime, userName);
@@ -38,6 +33,10 @@ namespace chet.Services
         public async void UpdateData(string userName, long UserId, DateTime dateTime, int points) 
         {
             await _gunRepository.UpdateData(userName, UserId, dateTime, points);
+        }
+        public async void UpdatePoints(long winId, long loseId, int points) 
+        {
+            await _gunRepository.UpdatePoints(winId, loseId, points);
         }
 
         public void DeleteAll() 

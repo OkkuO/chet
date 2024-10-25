@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\projects\\chet\\chet.csproj": {}
+    "D:\\projects\\chet — копия\\chet.csproj": {}
   },
   "projects": {
-    "D:\\projects\\chet\\chet.csproj": {
+    "D:\\projects\\chet — копия\\chet.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\projects\\chet\\chet.csproj",
+        "projectUniqueName": "D:\\projects\\chet — копия\\chet.csproj",
         "projectName": "chet",
-        "projectPath": "D:\\projects\\chet\\chet.csproj",
+        "projectPath": "D:\\projects\\chet — копия\\chet.csproj",
         "packagesPath": "C:\\Users\\Sleepeatnes\\.nuget\\packages\\",
-        "outputPath": "D:\\projects\\chet\\obj\\",
+        "outputPath": "D:\\projects\\chet — копия\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

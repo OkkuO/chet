@@ -37,23 +37,17 @@ namespace chet.Repositories
         }
 
         public async Task<Gun> GetId(long UserId) 
-        {
-            return await _dbContext.guns.AsNoTracking().FirstOrDefaultAsync(c => c.UserId == UserId);
+        {   
+            var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId);
+            if (gun == null)
+            {
+                return null;
+                throw new ArgumentException($"4004 : Пользователь с ID {UserId} не найден.");
+            }
+            return gun;
+
         }
 
-        public async Task<List<Gun>> GetPagedData (int pageNumber, int pageSize)
-        {
-
-            var data = _dbContext.guns
-
-                .Skip((pageNumber - 1) * pageSize)
-
-                .Take(pageSize)
-
-                .ToList();
-
-           return data;
-        }
         public async Task Add(int points, long UserId, DateTime dateTime, string userName)
         {
             var gun = new Gun()
@@ -76,6 +70,19 @@ namespace chet.Repositories
             gun.dateTime = DateTime.UtcNow;
             gun.points += points;
             gun.userName = userName;
+            await _dbContext.SaveChangesAsync(); 
+        }
+
+        public async Task UpdatePoints(long winId, long loseId, int points)
+        {
+            var gunWin = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == winId)
+                ?? throw new Exception("Пользователь не найден.");
+            var gunLose = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == loseId)
+                ?? throw new Exception("Пользователь не найден.");
+                
+            gunWin.points += points;
+            gunLose.points -= points;
+            
             await _dbContext.SaveChangesAsync(); 
         }
 

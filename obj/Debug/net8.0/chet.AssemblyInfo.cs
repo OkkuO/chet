@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("chet")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a3a98ea0879649c7a6c3e8b8f6d13608a21086d5")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6d652102f055005066e5f7851a76dcd63e370e19")]
 [assembly: System.Reflection.AssemblyProductAttribute("chet")]
 [assembly: System.Reflection.AssemblyTitleAttribute("chet")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

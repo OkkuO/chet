@@ -54,7 +54,7 @@ var cts = new CancellationTokenSource();
 GunService commands = app.Services.GetService<GunService>();
 //ChatService chatsCommands = app.Services.GetService<ChatService>();
 
-var bot = new TelegramBotClient("7688915305:AAHAN22krEHPFpIoHgYyI_3zbWBveBp_vvg", cancellationToken: cts.Token); //, 
+var bot = new TelegramBotClient("", cancellationToken: cts.Token); //, 
 
 var me = await bot.GetMeAsync();
 bot.OnError += OnError;
@@ -279,19 +279,45 @@ async Task OnMessage(Message msg, UpdateType type)
                         }
                         break;        
                     }
-                    case "/eblan":
-                    {
-                        if(msg?.ReplyToMessage!=null) {
-                        int result = random(0, 40);
-                                    //для отправки стикера
-                        var stickerId = await bot.GetStickerSetAsync("decommunization");
+                    case "/gift@bulya2024_bot":
+                    {   
+                        var replyUser = msg.ReplyToMessage;  
+                        
+                        if(replyUser?.Chat != null) 
+                        {
+                            if (commands.GetUserId(replyUser.From.Id).Result!=null)
+                            {
+                                int giftPoints = int.Parse(commandParams[1]);
 
-                    await bot.SendStickerAsync(msg.Chat.Id, 
-                            stickerId.Stickers[result].FileId,
-                            replyParameters:msg.ReplyToMessage.MessageId
-                            );
+                                if (giftPoints <= userPoints && giftPoints > 0)
+                                {
+                                    if (giftPoints==1)
+                                    {
+                                        await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> подарил_а очко для <a href=\"tg://user?id={replyUser.From.Id}\">{replyUser.From.FirstName}</a>!",
+                                        parseMode : ParseMode.Html);
+                                        commands.UpdatePoints(replyUser.From.Id, msg.From.Id, giftPoints);                                        
+                                    }
+                                    else
+                                    {
+                                        await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> подарил_а {commandParams[1]} очков для <a href=\"tg://user?id={replyUser.From.Id}\">{replyUser.From.FirstName}</a>!",
+                                        parseMode : ParseMode.Html);
+                                        commands.UpdatePoints(replyUser.From.Id, msg.From.Id, giftPoints);                                       
+                                    }
+
+                                }
+                                else
+                                {
+                                    await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> я рот ебала твой не твори хуйню пж, конча!",
+                                        parseMode : ParseMode.Html);
+                                }                              
+                            }
+                            else
+                            {
+                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={replyUser.From.Id}\">{replyUser.From.FirstName}</a> не является скорострелом!",
+                                parseMode : ParseMode.Html);                                  
+                            }
                         }
-                        await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
+                                       
                         break;
                     }            
                     case "/gun@bulya2024_bot":
@@ -379,6 +405,7 @@ async Task OnMessage(Message msg, UpdateType type)
                             parseMode : ParseMode.Html);
                         break;
                     }
+
             }
         }
     }
@@ -450,7 +477,7 @@ async Task OnUpdate(Update update)
 
                                     if (UserSend.points-winPoints < 0)
                                     {
-                                        winPoints = UserSend.points;
+                                        winPoints = UserSend.points/2;
                                     }
                                     
 
@@ -460,7 +487,7 @@ async Task OnUpdate(Update update)
 
                                     if (UserGet.points-winPoints < 0)
                                     {
-                                        winPoints = UserGet.points;
+                                        winPoints = UserGet.points/2;
                                     }                                   
                                 }
                                 else
@@ -472,7 +499,7 @@ async Task OnUpdate(Update update)
                                 
                                 if (win == 1)
                                 {
-                                    var msg1 = await bot.SendTextMessageAsync(query.Message!.Chat, $" {UserGet.userName} застрелил "
+                                    var msg1 = await bot.SendTextMessageAsync(query.Message!.Chat, $"{UserGet.userName} застрелил "
                                         + $"{UserSend.userName}!\n\n {UserGet.userName} получает {winPoints} очков. 😎\n {UserSend.userName} теряет {winPoints} очков. 🥺", 
                                         parseMode : ParseMode.Html);
 
@@ -480,18 +507,19 @@ async Task OnUpdate(Update update)
                                     winId = UserGet.UserId;
                                     commands.UpdatePoints(winId, loseId, winPoints); 
 
-                                    await Task.Delay(5000);
+                                    await Task.Delay(3000);
 
                                     await bot.EditMessageTextAsync(chatId: query.Message!.Chat,
                                     messageId: msg1.MessageId, 
-                                    text: $"{UserGet.userName}: {UserGet.points}\n {UserSend.userName}: {UserSend.points}"
-                                    + $"{UserGet.userName}: {UserGet.points}\n {UserSend.userName}: {UserSend.points}",
+                                    text: $"{UserGet.userName} застрелил "
+                                        + $"{UserSend.userName}!\n\n {UserGet.userName} получает {winPoints} очков. 😎\n{UserSend.userName} теряет {winPoints} очков. 🥺\n\n"
+                                        + $"{UserGet.userName}: {UserGet.points}\n{UserSend.userName}: {UserSend.points}", 
                                         parseMode : ParseMode.Html);
 
                                 } else
                                 {
-                                    var msg1 = await bot.SendTextMessageAsync(query.Message!.Chat, $" {UserSend.userName} застрелил {UserGet.userName}!\n\n"
-                                        + $"{UserSend.userName} получает {winPoints} очков. 😎\n {UserGet.userName} теряет {winPoints} очков. 🥺\n\n", 
+                                    var msg1 = await bot.SendTextMessageAsync(query.Message!.Chat, $"{UserSend.userName} застрелил {UserGet.userName}!\n\n"
+                                        + $"{UserSend.userName} получает {winPoints} очков.😎\n {UserGet.userName} теряет {winPoints} очков. 🥺\n\n", 
                                         parseMode : ParseMode.Html); 
 
                                     winId = UserSend.UserId;
@@ -499,13 +527,13 @@ async Task OnUpdate(Update update)
                                     commands.UpdatePoints(winId, loseId, winPoints);     
 
                                     
-                                    await Task.Delay(5000);
+                                    await Task.Delay(3000);
 
                                     await bot.EditMessageTextAsync(chatId: query.Message!.Chat,
                                     messageId: msg1.MessageId, 
-                                    text: $" {UserSend.userName} застрелил {UserGet.userName}!\n\n"
+                                    text: $"{UserSend.userName} застрелил {UserGet.userName}!\n\n"
                                         + $"{UserSend.userName} получает {winPoints} очков. 😎\n {UserGet.userName} теряет {winPoints} очков. 🥺\n\n"
-                                        + $"{UserGet.userName}: {UserGet.points}\n {UserSend.userName}: {UserSend.points}",
+                                        + $"{UserGet.userName}: {UserGet.points}\n{UserSend.userName}: {UserSend.points}",
                                         parseMode : ParseMode.Html);
                                                              
                                 }                                   

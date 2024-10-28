@@ -53,5 +53,12 @@ namespace chet.Repositories
             }
 
         }
+        public async void DeleteAllChats()
+        {
+            var chatsModel = await _dbContext.chats.ToListAsync();
+            _dbContext.chats.RemoveRange(chatsModel);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 }

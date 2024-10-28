@@ -26,9 +26,9 @@ namespace chet.Services
             await _chatRepository.AddChatMsg(chatId, msg);
         }
 
-        public void DeleteChats(long chatId) 
+        public void DeleteAllChats() 
         {
-            _chatRepository.DeleteChats(chatId);
+            _chatRepository.DeleteAllChats();
         }
     }
 }

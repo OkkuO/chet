@@ -17,6 +17,10 @@ namespace chet.Services
         {
             return await _gunRepository.GetAll();
         }
+        public async Task<List<long>> GetAllUserId() 
+        {
+            return await _gunRepository.GetAllUserId();
+        }
 
         public async Task<Gun> GetUserId(long UserId) 
         {
@@ -38,15 +42,14 @@ namespace chet.Services
         {
             await _gunRepository.UpdatePoints(winId, loseId, points);
         }
+        public async void UpdateFindPoints(long UserId, int points) 
+        {
+            await _gunRepository.UpdateFindPoints(UserId, points);
+        }
 
         public void DeleteAll() 
         {
             _gunRepository.DeleteAll();
-        }
-
-        internal void GetAllChats()
-        {
-            throw new NotImplementedException();
         }
     }
 }

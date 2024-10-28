@@ -36,6 +36,17 @@ namespace chet.Repositories
             return guns;
         }
 
+        public async Task<List<long>> GetAllUserId() 
+        
+        {
+            var guns = await _dbContext.guns
+            .AsNoTracking()
+            .Select(c => c.UserId)
+            .ToListAsync();
+           
+            return guns;
+        }
+
         public async Task<Gun> GetId(long UserId) 
         {   
             var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId);
@@ -82,6 +93,15 @@ namespace chet.Repositories
                 
             gunWin.points += points;
             gunLose.points -= points;
+            
+            await _dbContext.SaveChangesAsync(); 
+        }
+        public async Task UpdateFindPoints(long UserId, int points)
+        {
+            var gun = await _dbContext.guns.FirstOrDefaultAsync(c => c.UserId == UserId)
+                ?? throw new Exception("Пользователь не найден.");
+                
+            gun.points += points;
             
             await _dbContext.SaveChangesAsync(); 
         }

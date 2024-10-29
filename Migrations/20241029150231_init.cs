@@ -13,20 +13,6 @@ namespace chet.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "chats",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    chatId = table.Column<long>(type: "bigint", nullable: false),
-                    msg = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_chats", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "guns",
                 columns: table => new
                 {
@@ -46,9 +32,6 @@ namespace chet.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "chats");
-
             migrationBuilder.DropTable(
                 name: "guns");
         }

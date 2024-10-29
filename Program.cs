@@ -34,7 +34,6 @@ builder.Services.AddDbContext<GunDbContext>(
 builder.Services.AddScoped<GunService, GunService>();
 builder.Services.AddScoped<GunRepository, GunRepository>();
 
-builder.Services.AddScoped<ChatService, ChatService>();
 
 
 var app = builder.Build();

@@ -19,9 +19,6 @@ using Microsoft.VisualBasic;
 using Telegram.Bot.Types.ReplyMarkups;
 using Newtonsoft.Json;
 
-//using Telegram.BotAPI;
-
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,17 +30,12 @@ builder.Services.AddDbContext<GunDbContext>(
         connections.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
     });
     
-builder.Services.AddDbContext<ChatsDbContext>(
-    connections => 
-    {
-        connections.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-    });
 
 builder.Services.AddScoped<GunService, GunService>();
 builder.Services.AddScoped<GunRepository, GunRepository>();
 
 builder.Services.AddScoped<ChatService, ChatService>();
-builder.Services.AddScoped<ChatRepository, ChatRepository>();
+
 
 var app = builder.Build();
 
@@ -52,7 +44,6 @@ var app = builder.Build();
 var cts = new CancellationTokenSource();
 
 GunService commands = app.Services.GetService<GunService>();
-//ChatService chatsCommands = app.Services.GetService<ChatService>();
 
 var bot = new TelegramBotClient("", cancellationToken: cts.Token); //, 
 
@@ -72,20 +63,18 @@ int random (int a, int b) {
     Random rnd = new();
     return rnd.Next(a, b);
 }
+Dictionary<int, long> randomUserPlusPoints = [];
+Dictionary<string, int> userAndPoints = [];
 
+int counter2 = 0;
+int k = 0;
 
-        Dictionary<int, long> randomUserPlusPoints = [];
-        
-        int counter2 = 0;
-
-        int k = 0;
-
-        foreach (var item in commands!.GetAllUserId().Result)
-        {
-            randomUserPlusPoints.Add(k, item);
-            k++;
-            counter2++;
-        }
+foreach (var item in commands!.GetAllUserId().Result)
+{
+    randomUserPlusPoints.Add(k, item);
+    k++;
+    counter2++;
+}
         
 bot.OnMessage += OnMessage;
 bot.OnUpdate += OnUpdate;
@@ -110,33 +99,26 @@ async Task OnMessage(Message msg, UpdateType type)
         //решение проблем с экранированием < >  
         userName.Replace("<", "&lt;");
         userName.Replace(">", "&lt;");
-
-
-
         
         
         if(msg?.Text != null) 
         {
            
-        msgFind++;
+            msgFind++;
 
-        if (msgFind == 150)
-        {
-            msgFind = 0;
-            int randomFindPoints = random(2, 20);
-            int randomCounter = random(0, counter2);
+            if (msgFind == 150)
+            {
+                msgFind = 0;
+                int randomFindPoints = random(2, 20);
+                int randomCounter = random(0, counter2);
 
-            await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={randomUserPlusPoints[randomCounter]}\"> {commands.GetUserId(randomUserPlusPoints[randomCounter]).Result.userName}</a>"
-            + $" находит {randomFindPoints} очков у параши! Мои поздравления!",
-            parseMode : ParseMode.Html);
+                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={randomUserPlusPoints[randomCounter]}\"> {commands.GetUserId(randomUserPlusPoints[randomCounter]).Result.userName}</a>"
+                + $" находит {randomFindPoints} очков! Мои поздравления!",
+                parseMode : ParseMode.Html);
 
-            commands.UpdateFindPoints(randomUserPlusPoints[randomCounter], randomFindPoints);
-        }
-        System.Console.WriteLine(msgFind);
+                commands.UpdateFindPoints(randomUserPlusPoints[randomCounter], randomFindPoints);
+            }
             string[] commandParams = msg.Text.Split(' ');
-
-                     //начисление рандомно очков каждый час
-
             async void gunCommand()
             {
                 //выстрел
@@ -204,8 +186,6 @@ async Task OnMessage(Message msg, UpdateType type)
             }
             async void gunplayCommand()
             {
-                Dictionary<string, int> userAndPoints = [];
-
                 foreach (var item in commands!.GetAllGuns().Result)
                 {  
                     userAndPoints.Add( $"{item.userName}", item.points);
@@ -279,7 +259,7 @@ async Task OnMessage(Message msg, UpdateType type)
                         }
                         break;        
                     }
-                    case "/gift@bulya2024_bot":
+                    case "/gift@bulya2024_bot ":
                     {   
                         var replyUser = msg.ReplyToMessage;  
                         
@@ -307,13 +287,13 @@ async Task OnMessage(Message msg, UpdateType type)
                                 }
                                 else
                                 {
-                                    await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> я рот ебала твой не твори хуйню пж, конча!",
+                                    await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\">{msg.From.FirstName}</a> Введи количество очков после команды!",
                                         parseMode : ParseMode.Html);
                                 }                              
                             }
                             else
                             {
-                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={replyUser.From.Id}\">{replyUser.From.FirstName}</a> не является скорострелом!",
+                                await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={replyUser.From.Id}\">{replyUser.From.FirstName}</a> не является стрелком!",
                                 parseMode : ParseMode.Html);                                  
                             }
                         }
@@ -323,79 +303,40 @@ async Task OnMessage(Message msg, UpdateType type)
                     case "/gun@bulya2024_bot":
                     {
                         gunCommand();
+                        await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
                         break;
                     }
                     case "/topgun@bulya2024_bot":
                     {          
-                        
-                        
-
                         //строка для записи юзера и вывода ее ботом
                         string topUser = "";    
                         //счетчик юзеров (записывается в topUser)                                    
-                        int i = 1;
-                       
-                        
+                        int i = 1;                       
                         //кнопка в тексте
                         string callbackQueryData = 'a' + new Random().Next(5_000).ToString();
-                        // Массив кнопок прикрепляемых к сообщению
-                        var pagination_back = new InlineKeyboardMarkup(
-                            new[]{
-                                InlineKeyboardButton.WithCallbackData(text: "⬅️", callbackData: $"{msg.From.Id}:pagination_back"),
-                            }
-                        ); 
-                        var pagination_next = new InlineKeyboardMarkup(
-                            new[]{
-                                InlineKeyboardButton.WithCallbackData(text: "➡️", callbackData: $"{msg.From.Id}:pagination_next"),
-                            }
-                        ); 
-                        var bottons = new InlineKeyboardMarkup(
-                            new[]{
-                                InlineKeyboardButton.WithCallbackData(text: "⬅️", callbackData: $"{msg.From.Id}:pagination_back"),
-                                InlineKeyboardButton.WithCallbackData(text: "➡️", callbackData: $"{msg.From.Id}:pagination_next"),
-                            }
-                        ); 
-
-                        
-                        Dictionary<string, int> userAndPoints = [];
-
-
-                        //количество записей
-                        int counter = 0;
                                         
                         //добавление в словарь отсортированному по поинту
                         foreach (var item in commands!.GetAllGuns().Result)
                         {  
                             userAndPoints.Add( $"{item.userName}", item.points);
-                            counter++;
                         }
                         //перебор словаря и отредактирование его, а также подсчет
                         foreach (var item in userAndPoints)
-                        {                         
-                            topUser += $"{i++}. {item.ToString().ToString().Replace(",", ":").Replace("[", " ").Replace("]", " ").Replace("&lt;", "")} очков\n";                           
-                        }
-
-                        // Message sentMessage = await bot.SendTextMessageAsync(msg.Chat, $"😎 Топ скорострелов 😎\n" + "\n" + topUser, replyMarkup: pagination_next);
-                    
-                        // int messageId = msg.MessageId;
-                        // int sentMessageId = sentMessage.MessageId;
-
-                        if(counter < 10)
-                        {
-                            Message sentMessage = await bot.SendTextMessageAsync(msg.Chat, $"😎 Топ скорострелов 😎\n" + "\n" + topUser);
-                        }
-                        else
-                        {
-                            Message sentMessage = await bot.SendTextMessageAsync(msg.Chat, $"😎 Топ скорострелов 😎\n" + "\n" + topUser, replyMarkup: pagination_next);
-                        }
-
-                        await Task.Delay(5000);
-                        
+                        { 
+                            if (i<=50)
+                            {
+                                topUser += $"{i++}. {item.ToString().ToString().Replace(",", ":").Replace("[", " ").Replace("]", " ").Replace("&lt;", "")} очков\n"; 
+                            }
+                                                      
+                        }                    
+                        Message sentMessage = await bot.SendTextMessageAsync(msg.Chat, $"😎 Топ стрелков 😎\n" + "\n" + topUser);
+                        await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
                         break;
                     }
                     case "/gunplay@bulya2024_bot":
                     {
                         gunplayCommand();
+                        await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
                         break;
                     }
                     case "/me@bulya2024_bot":
@@ -403,9 +344,9 @@ async Task OnMessage(Message msg, UpdateType type)
                          await bot.SendTextMessageAsync(msg.Chat, $"<a href=\"tg://user?id={msg.From.Id}\"> {userName}</a>," +
                             $" количество ваших очков: {userPoints}.",
                             parseMode : ParseMode.Html);
+                            await bot.DeleteMessageAsync(msg.Chat.Id, msg.MessageId);
                         break;
                     }
-
             }
         }
     }
@@ -428,18 +369,9 @@ async Task OnUpdate(Update update)
                   
                 long actionCreatorId = long.Parse(query?.Data.Split(':')[0]); //id создателя
                 string action = query?.Data?.Split(':')[1]; //кнопка
-
-                if(action == "pagination_next") {
-                    await bot.AnswerCallbackQueryAsync(query.Id, $"You picked {query.Data}"); //выводит всплывающее сообщение
-                    await bot.SendTextMessageAsync(query.Message!.Chat, $"User {query.From} clicked on {query.Data}");
-                    //  await bot.EditMessageTextAsync(msg.Chat, sentMessageId,  $"😎 Топ скорострелов 😎\n" + "\n" + topUser, replyMarkup: bottons);
-                }             
-                if(action == "pagination_back") {
-                    await bot.AnswerCallbackQueryAsync(query.Id, $"You picked {query.Data}"); //выводит всплывающее сообщение
-                    await bot.SendTextMessageAsync(query.Message!.Chat, $"User {query.From} clicked on {query.Data}");
-                }
-
-                if(action == "gunplay") {
+                      
+                if(action == "gunplay") 
+                    {
 
                     Gun UserSend = commands.GetUserId(actionCreatorId).Result;
                     Gun UserGet = commands.GetUserId(query!.From.Id).Result;
@@ -469,33 +401,51 @@ async Task OnUpdate(Update update)
                                 int win = random(0, 2);
 
                                 int winPoints = 0;
+                                int bigPoints = random(0, 50);
                                 
+                                long loseId, winId;
 
                                 if (UserGet.points > UserSend.points)
                                 {
-                                    winPoints = UserGet.points/2;
+                                   
+                                    winPoints = UserSend.points/2;
 
-                                    if (UserSend.points-winPoints < 0)
+                                    if (bigPoints == 10)
                                     {
-                                        winPoints = UserSend.points/2;
+                                         var msg1 = await bot.SendTextMessageAsync(query.Message!.Chat, $"{UserGet.userName} "
+                                        + $"не справился с холодным оружием и застрелился.. 🥺\n"
+                                        + $"потеряно {UserGet.points/2} очков.  {UserSend.userName} просто нажал F и ушел назад в парашу искать очки..\n\n"
+                                        + $"{UserGet.userName}: {UserGet.points}\n{UserSend.userName}: {UserSend.points}", 
+                                        parseMode : ParseMode.Html);
+                                        
+                                        commands.UpdateFindPoints(UserGet.UserId,-UserGet.points/2);
+                                        win = 100;
+
                                     }
-                                    
 
                                 } else if (UserGet.points < UserSend.points)
                                 {
-                                    winPoints = UserSend.points/2;
-
-                                    if (UserGet.points-winPoints < 0)
+                                    winPoints = UserGet.points/2;
+                                    if (bigPoints == 10)
                                     {
-                                        winPoints = UserGet.points/2;
-                                    }                                   
+                                        var msg1 = await bot.SendTextMessageAsync(query.Message!.Chat, $"{UserSend.userName} "
+                                        + $"не справился с холодным оружием и застрелился.. 🥺\n"
+                                        + $"потеряно {UserSend.points/2} очков.  {UserGet.userName} просто нажал F и ушел назад в парашу искать очки..\n\n"
+                                        + $"{UserGet.userName}: {UserGet.points}\n{UserSend.userName}: {UserSend.points}", 
+                                        parseMode : ParseMode.Html);
+
+                                        commands.UpdateFindPoints(UserSend.UserId,-UserSend.points/2); 
+                                        win = 100;
+                                    }                           
                                 }
                                 else
                                 {
                                     winPoints = UserSend.points / 2;
                                 }
+
+
                                     
-                                long loseId, winId;
+                                
                                 
                                 if (win == 1)
                                 {
@@ -516,7 +466,7 @@ async Task OnUpdate(Update update)
                                         + $"{UserGet.userName}: {UserGet.points}\n{UserSend.userName}: {UserSend.points}", 
                                         parseMode : ParseMode.Html);
 
-                                } else
+                                } else if (win == 0)
                                 {
                                     var msg1 = await bot.SendTextMessageAsync(query.Message!.Chat, $"{UserSend.userName} застрелил {UserGet.userName}!\n\n"
                                         + $"{UserSend.userName} получает {winPoints} очков.😎\n {UserGet.userName} теряет {winPoints} очков. 🥺\n\n", 
@@ -544,7 +494,8 @@ async Task OnUpdate(Update update)
                                     parseMode : ParseMode.Html);
                             }
                         }                       
-                    }         
+                    }
+                    await bot.DeleteMessageAsync(query.Message!.Chat, query.Message!.MessageId);         
                 }                            
             break; 
             }
